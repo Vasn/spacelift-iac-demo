@@ -11,14 +11,15 @@
 # - Security Groups
 
 ## Compute
-# - EC2 Instances
+# - ECR
+# - ECS
 
 ## Storage
 # - RDS (PostgreSQL)
 
 ## ALB & DNS records
 # - ACM
-# - DNS
+# - DNS (Azure)
 # - ALB
 
 ## Secrets Manager
@@ -73,57 +74,36 @@ module "security_group" {
   app_port       = var.app_port
 }
 
-module "iam" {
-  source = "./modules/iam"
+module "ecr" {
+  source = "./modules/ecr"
+
+  ecrs         = var.ecrs
+  project_name = var.project_name
 }
 
-# module "instances" {
-#   source = "./modules/instance"
+module "ecs" {
+  source = "./modules/ecs"
 
-#   instances = {
-#     "bastion-1a" = {
-#       ami                    = "ami-0aa097a5c0d31430a" # ap-southeast-1 linux 2023
-#       instance_type          = "t2.micro"
-#       subnet_id              = module.subnets.subnet_ids["public-subnet-1a"]
-#       key_name               = "bastionkey"
-#       user_data              = ""
-#       vpc_security_group_ids = [module.security_group.bastion_security_group_id]
-#       iam_instance_profile   = ""
-#       name                   = "bastion-instance-public"
-#     },
-#     "web-1a" = {
-#       ami                    = "ami-0aa097a5c0d31430a"
-#       instance_type          = "t2.medium"
-#       subnet_id              = module.subnets.subnet_ids["web-subnet-1a"]
-#       key_name               = "webserverkeypair"
-#       user_data              = templatefile("./scripts/web.sh", { "aws_secretsmanager_secret_id" = module.secrets_manager.aws_secretsmanager_secret_name })
-#       vpc_security_group_ids = [module.security_group.web_security_group_id]
-#       iam_instance_profile   = module.iam.ec2_profile.name
-#       name                   = "web-instance-private"
-#     },
-#     "app-1a" = {
-#       ami                    = "ami-0aa097a5c0d31430a"
-#       instance_type          = "t2.medium"
-#       subnet_id              = module.subnets.subnet_ids["app-subnet-1a"]
-#       key_name               = "webserverkeypair"
-#       user_data              = base64encode(templatefile("./scripts/app.sh", { "aws_secretsmanager_secret_id" = module.secrets_manager.aws_secretsmanager_secret_name }))
-#       vpc_security_group_ids = [module.security_group.app_security_group_id]
-#       iam_instance_profile   = module.iam.ec2_profile.name
-#       name                   = "app-instance-private-1a"
-#     },
-#     "app-1b" = {
-#       ami                    = "ami-0aa097a5c0d31430a"
-#       instance_type          = "t2.medium"
-#       subnet_id              = module.subnets.subnet_ids["app-subnet-1b"]
-#       key_name               = "webserverkeypair"
-#       user_data              = base64encode(templatefile("./scripts/app.sh", { "aws_secretsmanager_secret_id" = module.secrets_manager.aws_secretsmanager_secret_name }))
-#       vpc_security_group_ids = [module.security_group.app_security_group_id]
-#       iam_instance_profile   = module.iam.ec2_profile.name
-#       name                   = "app-instance-private-1b"
-#     }
-#   }
-#   depends_on = [module.secrets_manager.app_env_var_resource]
-# }
+  project_name                  = var.project_name
+  ecs_task_web_overall_cpu      = var.ecs_task_web_overall_cpu
+  ecs_task_web_overall_memory   = var.ecs_task_web_overall_memory
+  ecr_repo_url                  = module.ecr.ecr_repo_url
+  ecs_task_web_main_cpu         = var.ecs_task_web_main_cpu
+  ecs_task_web_main_memory      = var.ecs_task_web_main_memory
+  web_port                      = var.web_port
+  ecs_task_app_overall_cpu      = var.ecs_task_app_overall_cpu
+  ecs_task_app_overall_memory   = var.ecs_task_app_overall_memory
+  ecs_task_app_main_cpu         = var.ecs_task_app_main_cpu
+  ecs_task_app_main_memory      = var.ecs_task_app_main_memory
+  app_port                      = var.app_port
+  aws_secretsmanager_secret_arn = module.secrets_manager.aws_secretsmanager_secret_arn
+  web_subnets                   = [module.subnets.subnet_ids["web-subnet-1a"]]
+  web_security_groups           = [module.security_group.ecs_web_security_group_id]
+  web_target_group_arn          = module.alb.web_target_group_arn
+  app_subnets                   = [module.subnets.subnet_ids["app-subnet-1a"], module.subnets.subnet_ids["app-subnet-1b"]]
+  app_security_groups           = [module.security_group.ecs_app_security_group_id]
+  app_target_group_arn          = module.alb.app_target_group_arn
+}
 
 module "rds" {
   source = "./modules/rds"
@@ -157,15 +137,8 @@ module "alb" {
     module.subnets.subnet_ids["public-subnet-1a"],
     module.subnets.subnet_ids["public-subnet-1b"]
   ]
-  vpc_id = module.vpc.vpc_id
-  # web_instance_ids = {
-  #   "web-1a" = module.instances.instance_id["web-1a"]
-  # }
-  web_instance_port = var.web_port
-  # app_instance_ids = {
-  #   "app-1a" = module.instances.instance_id["app-1a"],
-  #   "app-1b" = module.instances.instance_id["app-1b"]
-  # }
+  vpc_id                    = module.vpc.vpc_id
+  web_instance_port         = var.web_port
   app_instance_port         = var.app_port
   web_domain                = var.web_domain
   app_domain                = var.app_domain
@@ -194,39 +167,6 @@ module "secrets_manager" {
   dd_logs_injection          = var.dd_logs_injection
   github_token               = var.github_token
 }
-
-module "ecr" {
-  source = "./modules/ecr"
-
-  ecrs         = var.ecrs
-  project_name = var.project_name
-}
-
-module "ecs" {
-  source = "./modules/ecs"
-
-  project_name                  = var.project_name
-  ecs_task_web_overall_cpu      = var.ecs_task_web_overall_cpu
-  ecs_task_web_overall_memory   = var.ecs_task_web_overall_memory
-  ecr_repo_url                  = module.ecr.ecr_repo_url
-  ecs_task_web_main_cpu         = var.ecs_task_web_main_cpu
-  ecs_task_web_main_memory      = var.ecs_task_web_main_memory
-  web_port                      = var.web_port
-  ecs_task_app_overall_cpu      = var.ecs_task_app_overall_cpu
-  ecs_task_app_overall_memory   = var.ecs_task_app_overall_memory
-  ecs_task_app_main_cpu         = var.ecs_task_app_main_cpu
-  ecs_task_app_main_memory      = var.ecs_task_app_main_memory
-  app_port                      = var.app_port
-  aws_secretsmanager_secret_arn = module.secrets_manager.aws_secretsmanager_secret_arn
-  web_subnets                   = [module.subnets.subnet_ids["web-subnet-1a"]]
-  web_security_groups           = [module.security_group.ecs_web_security_group_id]
-  web_target_group_arn          = module.alb.web_target_group_arn
-  app_subnets                   = [module.subnets.subnet_ids["app-subnet-1a"], module.subnets.subnet_ids["app-subnet-1b"]]
-  app_security_groups           = [module.security_group.ecs_app_security_group_id]
-  app_target_group_arn          = module.alb.app_target_group_arn
-}
-
-# work on the security group > alb > target_group 
 
 # terraform plan -var-file="config.tfvars" 
 # terraform apply -var-file="config.tfvars" --auto-approve

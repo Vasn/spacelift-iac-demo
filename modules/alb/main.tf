@@ -31,14 +31,6 @@ resource "aws_lb_target_group" "web" {
   }
 }
 
-# resource "aws_lb_target_group_attachment" "web_attach" {
-#   for_each = var.web_instance_ids
-
-#   target_group_arn = aws_lb_target_group.web.arn
-#   target_id        = each.value
-#   port             = var.web_instance_port
-# }
-
 # target group - app
 resource "aws_lb_target_group" "app" {
   name        = "${var.project_name}-ecs-app"
@@ -57,14 +49,6 @@ resource "aws_lb_target_group" "app" {
     timeout             = 120 # in seconds
   }
 }
-
-# resource "aws_lb_target_group_attachment" "app_attach" {
-#   for_each = var.app_instance_ids
-
-#   target_group_arn = aws_lb_target_group.app.arn
-#   target_id        = each.value
-#   port             = var.app_instance_port
-# }
 
 # acm - ssl certificate
 resource "aws_acm_certificate" "web_app" {

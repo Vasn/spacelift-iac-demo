@@ -38,15 +38,9 @@ resource "aws_ecs_task_definition" "web" {
       portMappings = [{
         containerPort = var.web_port
       }]
-      # environment = [
-      #     {
-      #         "name": "varname"
-      #         "value": "varvalue"
-      #     }
-      # ]
       secrets = [
         {
-          "name" : "REACT_APP_API_URL", 
+          "name" : "REACT_APP_API_URL",
           "valueFrom" : "${var.aws_secretsmanager_secret_arn}:REACT_APP_API_URL::"
         }
       ]
@@ -55,8 +49,8 @@ resource "aws_ecs_task_definition" "web" {
 
   runtime_platform {
     operating_system_family = "LINUX"
-    # if you use X86_64, you will be trapped in "Exit code: 1" hell
-    cpu_architecture        = "X86_64"
+    # use ARM64 if you are pushing docker image built using M1/M2 chip
+    cpu_architecture = "X86_64"
   }
 }
 
@@ -79,6 +73,7 @@ resource "aws_ecs_task_definition" "app" {
       portMappings = [{
         containerPort = var.app_port
       }]
+
       logConfiguration = {
         logDriver = "awslogs"
         options = {
@@ -90,55 +85,55 @@ resource "aws_ecs_task_definition" "app" {
 
       secrets = [
         {
-          "name" : "DATABASE_URL", 
+          "name" : "DATABASE_URL",
           "valueFrom" : "${var.aws_secretsmanager_secret_arn}:DATABASE_URL::"
         },
         {
-          "name" : "FIRST_SUPER_ADMIN_EMAIL", 
+          "name" : "FIRST_SUPER_ADMIN_EMAIL",
           "valueFrom" : "${var.aws_secretsmanager_secret_arn}:FIRST_SUPER_ADMIN_EMAIL::"
         },
         {
-          "name" : "FIRST_SUPER_ADMIN_PASSWORD", 
+          "name" : "FIRST_SUPER_ADMIN_PASSWORD",
           "valueFrom" : "${var.aws_secretsmanager_secret_arn}:FIRST_SUPER_ADMIN_PASSWORD::"
         },
         {
-          "name" : "JWT_SECRET", 
+          "name" : "JWT_SECRET",
           "valueFrom" : "${var.aws_secretsmanager_secret_arn}:JWT_SECRET::"
         },
         {
-          "name" : "AUTH_AD_TENANT_ID", 
+          "name" : "AUTH_AD_TENANT_ID",
           "valueFrom" : "${var.aws_secretsmanager_secret_arn}:AUTH_AD_TENANT_ID::"
         },
         {
-          "name" : "AUTH_AD_CLIENT_ID", 
+          "name" : "AUTH_AD_CLIENT_ID",
           "valueFrom" : "${var.aws_secretsmanager_secret_arn}:AUTH_AD_CLIENT_ID::"
         },
         {
-          "name" : "AUTH_AD_CLIENT_SECRET", 
+          "name" : "AUTH_AD_CLIENT_SECRET",
           "valueFrom" : "${var.aws_secretsmanager_secret_arn}:AUTH_AD_CLIENT_SECRET::"
         },
         {
-          "name" : "AUTH_AD_REDIRECT_DOMAIN", 
+          "name" : "AUTH_AD_REDIRECT_DOMAIN",
           "valueFrom" : "${var.aws_secretsmanager_secret_arn}:AUTH_AD_REDIRECT_DOMAIN::"
         },
         {
-          "name" : "AUTH_AD_COOKIE_KEY", 
+          "name" : "AUTH_AD_COOKIE_KEY",
           "valueFrom" : "${var.aws_secretsmanager_secret_arn}:AUTH_AD_COOKIE_KEY::"
         },
         {
-          "name" : "AUTH_AD_COOKIE_IV", 
+          "name" : "AUTH_AD_COOKIE_IV",
           "valueFrom" : "${var.aws_secretsmanager_secret_arn}:AUTH_AD_COOKIE_IV::"
         },
         {
-          "name" : "FRONT_END_HOST", 
+          "name" : "FRONT_END_HOST",
           "valueFrom" : "${var.aws_secretsmanager_secret_arn}:FRONT_END_HOST::"
         },
         {
-          "name" : "DD_ENV", 
+          "name" : "DD_ENV",
           "valueFrom" : "${var.aws_secretsmanager_secret_arn}:DD_ENV::"
         },
         {
-          "name" : "DD_LOGS_INJECTION", 
+          "name" : "DD_LOGS_INJECTION",
           "valueFrom" : "${var.aws_secretsmanager_secret_arn}:DD_LOGS_INJECTION::"
         }
       ]
@@ -147,13 +142,14 @@ resource "aws_ecs_task_definition" "app" {
 
   runtime_platform {
     operating_system_family = "LINUX"
-    cpu_architecture        = "X86_64"
+    # use ARM64 if you are pushing docker image built using M1/M2 chip
+    cpu_architecture = "X86_64"
   }
 }
 
 resource "aws_cloudwatch_log_group" "ecs_log_group" {
   name              = "/ecs/my-service"
-  retention_in_days = 3  # Set log retention as needed
+  retention_in_days = 3 # Set log retention as needed
 }
 
 resource "aws_ecs_service" "web" {
