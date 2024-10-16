@@ -1,0 +1,80 @@
+#### Providers ####
+# AWS Provider
+aws_profile_name = ""
+aws_region = ""
+project_name = ""
+
+# Azure Provider
+azure_subscription_id = ""
+# tenant_id = ""
+
+#### Modules ####
+# VPC
+vpc_cidr_block = ""
+
+# Subnet
+subnets = {
+  "public-subnet-1a" = {
+    cidr_block        = ""
+    availability_zone = ""
+    name              = ""
+    tier              = "public"
+  },
+  "public-subnet-1b" = {
+    cidr_block        = ""
+    availability_zone = ""
+    name              = ""
+    tier              = "public"
+  },
+  "web-subnet-1a" = {
+    cidr_block        = ""
+    availability_zone = ""
+    name              = ""
+    tier              = "private"
+  },
+  "app-subnet-1a" = {
+    cidr_block        = ""
+    availability_zone = ""
+    name              = ""
+    tier              = "private"
+  },
+  "app-subnet-1b" = {
+    cidr_block        = ""
+    availability_zone = ""
+    name              = ""
+    tier              = "private"
+  },
+  "data-subnet-1a" = {
+    cidr_block        = ""
+    availability_zone = ""
+    name              = ""
+    tier              = "private-database"
+  },
+  "data-subnet-1b" = {
+    cidr_block        = ""
+    availability_zone = ""
+    name              = ""
+    tier              = "private-database"
+  }
+}
+
+# Route Table
+
+# ALB
+web_domain = ""
+app_domain = ""
+azure_dns_zone_name = ""
+azure_resource_group_name = ""
+web_instance_port = # number
+app_instance_port = # number
+azure_cname_ttl = # number
+
+# RDS
+db_allocated_storage = ""
+db_name = ""
+db_engine_type = ""
+db_engine_version = ""
+db_instance_class = ""
+db_username = ""
+db_password = ""
+db_storage_type = ""
