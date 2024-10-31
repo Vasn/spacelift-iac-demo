@@ -18,6 +18,6 @@ module "gateway" {
   version = "0.1.0"
 
   vpc_id                          = module.vpc.vpc_id
-  nat_gateway_public_subnet_1a_id = module.subnets.subnet_ids["public-subnet-1a"]
-  nat_gateway_public_subnet_1b_id = module.subnets.subnet_ids["public-subnet-1b"]
+  nat_gateway_public_subnet_1a_id = module.subnet.subnet_ids["public-subnet-1a"]
+  nat_gateway_public_subnet_1b_id = module.subnet.subnet_ids["public-subnet-1b"]
 }
