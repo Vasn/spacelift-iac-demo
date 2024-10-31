@@ -2,14 +2,14 @@
 terraform {
   required_providers {
     aws = {
-        source = "hashicorp/aws"
-        version = "~> 5.66"
+      source  = "hashicorp/aws"
+      version = "~> 5.66"
     }
   }
 }
 
 provider "aws" {
-  region  = var.aws_region
+  region = var.aws_region
 
   default_tags {
     tags = {
@@ -21,26 +21,16 @@ provider "aws" {
 
 # resources/modules
 module "vpc" {
-  source = "spacelift.io/vasn/vpc/aws"
+  source  = "spacelift.io/vasn/vpc/aws"
   version = "0.1.0"
 
-  aws_region = var.aws_region
   vpc_cidr_block = var.vpc_cidr_block
 }
 
-# variables
-variable "aws_region" {
-  type = string
-}
+module "subnet" {
+  source  = "spacelift.io/vasn/subnet/aws"
+  version = "0.1.0"
 
-variable "project_name" {
-  type = string
-}
-
-variable "project_owner" {
-  type = string
-}
-
-variable "vpc_cidr_block" {
-  type = string
+  subnets = var.subnets
+  vpc_id  = module.vpc_id
 }
