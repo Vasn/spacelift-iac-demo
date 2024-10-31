@@ -36,6 +36,7 @@ module "route_table" {
     for key, value in module.subnet.subnet_ids :
     key => {
       subnet_id = value
+      route_table_key = (substr(key, length(key) - 1, 1)) == "a" ? "nat_a" : "nat_b"
     }
     if substr(key, 0, 3) == "web" || substr(key, 0, 3) == "app"
   }
@@ -43,7 +44,6 @@ module "route_table" {
     for key, value in module.subnet.subnet_ids :
     key => {
       subnet_id       = value
-      route_table_key = (substr(key, length(key) - 1, 1)) == "a" ? "nat_a" : "nat_b"
     }
     if substr(key, 0, 6) == "public"
   }
