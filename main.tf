@@ -7,7 +7,7 @@ module "vpc" {
 
 module "subnet" {
   source  = "spacelift.io/vasn/subnet/aws"
-  version = "0.1.1"
+  version = "0.1.2"
 
   subnets = var.subnets
   vpc_id  = module.vpc.vpc_id
