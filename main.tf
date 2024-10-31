@@ -80,7 +80,7 @@ module "rds" {
 
 module "alb" {
   source  = "spacelift.io/vasn/alb/aws"
-  version = "0.1.0"
+  version = "0.1.1"
 
   alb_security_groups = [
     module.security_group.alb_security_group_id
