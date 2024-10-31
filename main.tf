@@ -36,3 +36,13 @@ module "route_table" {
   private_subnets = module.subnet.private_subnet_ids
   data_subnets    = module.subnet.data_subnet_ids
 }
+
+module "security_group" {
+  source  = "spacelift.io/vasn/security_group/aws"
+  version = "0.1.0"
+
+  project_name = var.project_name
+  vpc_id       = module.vpc.vpc_id
+  web_port     = var.web_port
+  app_port     = var.app_port
+}

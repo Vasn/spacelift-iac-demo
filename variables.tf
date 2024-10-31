@@ -23,3 +23,13 @@ variable "subnets" {
     map_public_ip_on_launch = bool
   }))
 }
+
+variable "web_port" {
+  type        = number
+  description = "Container port for web container"
+}
+
+variable "app_port" {
+  type        = number
+  description = "Container port for app container"
+}
