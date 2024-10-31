@@ -83,3 +83,43 @@ variable "secret_map" {
   type        = map(string)
   description = "Map of key-pair secrets"
 }
+
+variable "ecs_task_web_overall_cpu" {
+  type        = number
+  description = "Amount of combined CPU resources allocated to all containers in a web task"
+}
+
+variable "ecs_task_web_overall_memory" {
+  type        = number
+  description = "Amount of combined memory resources allocated to all containers in a web task"
+}
+
+variable "ecs_task_web_main_cpu" {
+  type        = number
+  description = "Amount of CPU resources allocated a web container"
+}
+
+variable "ecs_task_web_main_memory" {
+  type        = number
+  description = "Amount of memory resources allocated a web container"
+}
+
+variable "ecs_task_app_overall_cpu" {
+  type        = number
+  description = "Amount of combined CPU resources allocated to all containers in a app task"
+}
+
+variable "ecs_task_app_overall_memory" {
+  type        = number
+  description = "Amount of combined memory resources allocated to all containers in a app task"
+}
+
+variable "ecs_task_app_main_cpu" {
+  type        = number
+  description = "Amount of CPU resources allocated a app container"
+}
+
+variable "ecs_task_app_main_memory" {
+  type        = number
+  description = "Amount of memory resources allocated a app container"
+}
