@@ -54,3 +54,18 @@ module "ecr" {
   ecrs         = var.ecrs
   project_name = var.project_name
 }
+
+module "alb" {
+  source  = "spacelift.io/vasn/alb/aws"
+  version = "0.1.0"
+
+  alb_security_groups = [
+    module.security_group.alb_security_group_id
+  ]
+  alb_subnets = [
+    module.subnet.public_subnets["public-subnet-1a"].subnet_id,
+    module.subnet.public_subnets["public-subnet-1b"].subnet_id
+  ]
+  project_name = var.project_name
+  vpc_id       = module.vpc.vpc_id
+}
