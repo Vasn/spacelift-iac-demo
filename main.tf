@@ -138,7 +138,7 @@ module "ecs" {
     module.security_group.ecs_web_security_group_id
   ]
   web_subnets = [
-    module.subnet.public_subnet_ids["web-subnet-1a"].subnet_id
+    module.subnet.private_subnet_ids["web-subnet-1a"].subnet_id
   ]
   web_target_group_arn = module.alb.web_target_group_arn
 }
