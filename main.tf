@@ -33,24 +33,24 @@ module "route_table" {
     "nat_b" = module.gateway.nat_gateway_b_id
   }
   private_subnets = {
-    for key, subnet in module.subnet.subnet_ids :
+    for key, value in module.subnet.subnet_ids :
     key => {
-      subnet_id = subnet.id
+      subnet_id = value
     }
     if substr(key, 0, 3) == "web" || substr(key, 0, 3) == "app"
   }
   public_subnets = {
-    for key, subnet in module.subnet.subnet_ids :
+    for key, value in module.subnet.subnet_ids :
     key => {
-      subnet_id       = subnet.id
+      subnet_id       = value
       route_table_key = (substr(key, length(key) - 1, 1)) == "a" ? "nat_a" : "nat_b"
     }
     if substr(key, 0, 6) == "public"
   }
   data_subnets = {
-    for key, subnet in module.subnet.subnet_ids :
+    for key, value in module.subnet.subnet_ids :
     key => {
-      subnet_id = subnet.id
+      subnet_id = value
     }
     if substr(key, 0, 4) == "data"
   }
