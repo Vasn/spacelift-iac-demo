@@ -7,7 +7,7 @@ module "vpc" {
 
 module "subnet" {
   source  = "spacelift.io/vasn/subnet/aws"
-  version = "0.1.0"
+  version = "0.1.1"
 
   subnets = var.subnets
   vpc_id  = module.vpc.vpc_id
@@ -18,8 +18,8 @@ module "gateway" {
   version = "0.1.0"
 
   vpc_id                          = module.vpc.vpc_id
-  nat_gateway_public_subnet_1a_id = module.subnet.subnet_ids["public-subnet-1a"]
-  nat_gateway_public_subnet_1b_id = module.subnet.subnet_ids["public-subnet-1b"]
+  nat_gateway_public_subnet_1a_id = module.subnet.public_subnet_ids["public-subnet-1a"].subnet_id
+  nat_gateway_public_subnet_1b_id = module.subnet.public_subnet_ids["public-subnet-1b"].subnet_id
 }
 
 module "route_table" {
@@ -32,26 +32,7 @@ module "route_table" {
     "nat_a" = module.gateway.nat_gateway_a_id,
     "nat_b" = module.gateway.nat_gateway_b_id
   }
-  private_subnets = {
-    for key, value in module.subnet.subnet_ids :
-    key => {
-      subnet_id = value
-      route_table_key = (substr(key, length(key) - 1, 1)) == "a" ? "nat_a" : "nat_b"
-    }
-    if substr(key, 0, 3) == "web" || substr(key, 0, 3) == "app"
-  }
-  public_subnets = {
-    for key, value in module.subnet.subnet_ids :
-    key => {
-      subnet_id       = value
-    }
-    if substr(key, 0, 6) == "public"
-  }
-  data_subnets = {
-    for key, value in module.subnet.subnet_ids :
-    key => {
-      subnet_id = value
-    }
-    if substr(key, 0, 4) == "data"
-  }
+  public_subnets  = module.subnet.public_subnet_ids
+  private_subnets = module.subnet.private_subnet_ids
+  data_subnets    = module.subnet.data_subnet_ids
 }
