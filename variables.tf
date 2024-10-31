@@ -33,3 +33,8 @@ variable "app_port" {
   type        = number
   description = "Container port for app container"
 }
+
+variable "ecrs" {
+  type        = map(string)
+  description = "Names of the container registry"
+}

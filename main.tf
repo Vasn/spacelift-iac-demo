@@ -46,3 +46,11 @@ module "security_group" {
   web_port     = var.web_port
   app_port     = var.app_port
 }
+
+module "ecr" {
+  source  = "spacelift.io/vasn/ecr/aws"
+  version = "0.1.0"
+
+  ecrs         = var.ecrs
+  project_name = var.project_name
+}
