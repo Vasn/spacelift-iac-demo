@@ -1,25 +1,3 @@
-# providers
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.66"
-    }
-  }
-}
-
-provider "aws" {
-  region = var.aws_region
-
-  default_tags {
-    tags = {
-      app_name = "${var.project_name}-app"
-      owner    = var.project_owner
-    }
-  }
-}
-
-# resources/modules
 module "vpc" {
   source  = "spacelift.io/vasn/vpc/aws"
   version = "0.1.0"
@@ -33,4 +11,13 @@ module "subnet" {
 
   subnets = var.subnets
   vpc_id  = module.vpc.vpc_id
+}
+
+module "gateway" {
+  source  = "spacelift.io/vasn/gateway/aws"
+  version = "0.1.0"
+
+  vpc_id                          = module.vpc.vpc_id
+  nat_gateway_public_subnet_1a_id = module.subnets.subnet_ids["public-subnet-1a"]
+  nat_gateway_public_subnet_1b_id = module.subnets.subnet_ids["public-subnet-1b"]
 }
