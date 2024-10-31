@@ -38,3 +38,43 @@ variable "ecrs" {
   type        = map(string)
   description = "Names of the container registry"
 }
+
+variable "db_allocated_storage" {
+  type        = number
+  description = "The amount of allocated storage for the RDS instance (in GB)"
+}
+
+variable "db_name" {
+  type        = string
+  description = "Database Name"
+}
+
+variable "db_engine_type" {
+  type        = string
+  description = "Database Engine Type"
+}
+
+variable "db_engine_version" {
+  type        = string
+  description = "Database Engine Version (based on the DB type)"
+}
+
+variable "db_instance_class" {
+  type        = string
+  description = "RDS Instance Type e.g. db.t2.micro"
+}
+
+variable "db_username" {
+  type        = string
+  description = "Username for master user"
+}
+
+variable "db_password" {
+  type        = string
+  description = "Password for master user"
+}
+
+variable "db_storage_type" {
+  type        = string
+  description = "RDS Storage Type e.g. gp3"
+}

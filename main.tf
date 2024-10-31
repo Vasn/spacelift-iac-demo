@@ -55,6 +55,29 @@ module "ecr" {
   project_name = var.project_name
 }
 
+module "rds" {
+  source  = "spacelift.io/vasn/rds/aws"
+  version = "0.1.0"
+
+  # Required inputs 
+  db_allocated_storage = var.db_allocated_storage
+  db_engine_type       = var.db_engine_type
+  db_engine_version    = var.db_engine_version
+  db_instance_class    = var.db_instance_class
+  db_name              = var.db_name
+  db_password          = var.db_password
+  db_sg_ids = [
+    module.security_group.db_security_group_id
+  ]
+  db_subnets = [
+    module.subnet.data_subnet_ids["data-subnet-1a"].subnet_id,
+    module.subnet.data_subnet_ids["data-subnet-1b"].subnet_id
+  ]
+  db_username     = var.db_username
+  project_name    = var.project_name
+  db_storage_type = var.db_storage_type
+}
+
 module "alb" {
   source  = "spacelift.io/vasn/alb/aws"
   version = "0.1.0"
