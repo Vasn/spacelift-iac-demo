@@ -92,3 +92,21 @@ module "alb" {
   project_name = var.project_name
   vpc_id       = module.vpc.vpc_id
 }
+
+module "secrets_manager" {
+  source  = "spacelift.io/vasn/secrets_manager/aws"
+  version = "0.1.0"
+
+  project_name = var.project_name
+  secret_map = merge(
+    var.secret_map,
+    {
+      REACT_APP_API_URL       = "https://backend.${module.alb.alb_dns}"
+      DATABASE_URL            = module.rds.db_connection_string
+      AUTH_AD_REDIRECT_DOMAIN = "https://backend.${module.alb.alb_dns}"
+      FRONT_END_HOST          = "https://frontend.${module.alb.alb_dns}"
+    }
+  )
+}
+
+# need to change alb module to have listeners to do host header based routing to redirect traffic to the target groups

@@ -78,3 +78,8 @@ variable "db_storage_type" {
   type        = string
   description = "RDS Storage Type e.g. gp3"
 }
+
+variable "secret_map" {
+  type        = map(string)
+  description = "Map of key-pair secrets"
+}
