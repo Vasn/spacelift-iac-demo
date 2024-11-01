@@ -80,7 +80,7 @@ module "rds" {
 
 module "alb" {
   source  = "spacelift.io/vasn/alb/aws"
-  version = "0.1.3"
+  version = "0.1.4"
 
   alb_security_groups = [
     module.security_group.alb_security_group_id
@@ -101,10 +101,10 @@ module "secrets_manager" {
   secret_map = merge(
     var.secret_map,
     {
-      REACT_APP_API_URL       = "https://backend.${module.alb.alb_dns}"
+      REACT_APP_API_URL       = "http://backend.${module.alb.alb_dns}"
       DATABASE_URL            = module.rds.db_connection_string
-      AUTH_AD_REDIRECT_DOMAIN = "https://backend.${module.alb.alb_dns}"
-      FRONT_END_HOST          = "https://frontend.${module.alb.alb_dns}"
+      AUTH_AD_REDIRECT_DOMAIN = "http://backend.${module.alb.alb_dns}"
+      FRONT_END_HOST          = "http://frontend.${module.alb.alb_dns}"
     }
   )
 }
